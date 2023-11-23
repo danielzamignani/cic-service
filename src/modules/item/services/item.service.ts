@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ItemEntity } from 'src/entities/item.entity';
 import { Repository } from 'typeorm';
 import { GetAllItemsRespondeDTO } from '../dtos/get-all-items-response.dto';
+import { ICurrentUser } from 'src/shared/interfaces/current-user.interface';
 
 @Injectable()
 export class ItemService {
@@ -11,7 +12,9 @@ export class ItemService {
 
   constructor() {}
 
-  async getAllItems(): Promise<GetAllItemsRespondeDTO[]> {
+  async getAllItems(
+    currentUser: ICurrentUser,
+  ): Promise<GetAllItemsRespondeDTO[]> {
     const items: GetAllItemsRespondeDTO[] = await this.itemEntityRepository
       .createQueryBuilder('i')
       .select([
@@ -24,9 +27,9 @@ export class ItemService {
       .leftJoin(
         'items_users',
         'iu',
-        `iu."itemsId" = i."id" AND iu."usersId" = :idusuario`,
+        `iu."itemsId" = i."id" AND iu."usersId" = :userId`,
         {
-          idusuario: null,
+          userId: currentUser?.userId || null,
         },
       )
       .getRawMany();
