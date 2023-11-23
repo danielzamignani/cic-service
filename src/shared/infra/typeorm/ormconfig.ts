@@ -9,7 +9,7 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DATABASE,
   entities: ['dist/entities/*.entity.js'],
-  migrations: ['dist/migrations/*.js'],
+  migrations: ['dist/shared/infra/typeorm/migrations/*.js'],
   migrationsTableName: 'migrations',
   synchronize: false,
   logging: true,
