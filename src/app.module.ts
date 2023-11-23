@@ -4,9 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ItemModule } from './modules/item/item.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot(dataSourceOptions),
-    ItemModule
-  ]
+  imports: [TypeOrmModule.forRoot(dataSourceOptions), ItemModule],
 })
 export class AppModule {}

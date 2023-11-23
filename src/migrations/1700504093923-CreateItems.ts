@@ -1,38 +1,38 @@
-import { MigrationInterface, QueryRunner, Table } from "typeorm"
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateItems1700504093923 implements MigrationInterface {
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.createTable(
-            new Table({
-                name: 'items',
-                columns: [
-                    {
-                        name: 'id',
-                        type: 'smallint',
-                        isPrimary: true,
-                        isGenerated: true,
-                        generationStrategy: 'increment'
-                    },
-                    {
-                        name: 'name',
-                        type: 'varchar',
-                        length: '20'
-                    },
-                    {
-                        name: 'price',
-                        type: 'decimal',
-                        precision: 10,
-                        scale: 2
-                    },
-                    {
-                        name: 'imageUrl',
-                        type: 'varchar'
-                    }
-                ]
-            })
-        );
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.createTable(
+      new Table({
+        name: 'items',
+        columns: [
+          {
+            name: 'id',
+            type: 'smallint',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          {
+            name: 'name',
+            type: 'varchar',
+            length: '20',
+          },
+          {
+            name: 'price',
+            type: 'decimal',
+            precision: 10,
+            scale: 2,
+          },
+          {
+            name: 'imageUrl',
+            type: 'varchar',
+          },
+        ],
+      }),
+    );
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             INSERT INTO 
                 items (id, name, price, "imageUrl")
             VALUES 
@@ -45,10 +45,9 @@ export class CreateItems1700504093923 implements MigrationInterface {
                 (7, 'Café Expresso', 6.50, 'https://dhg1h5j42swfq.cloudfront.net/2017/01/18142635/caf%C3%A9-expresso.png' )
             ;
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('items');
-    }
-
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropTable('items');
+  }
 }
