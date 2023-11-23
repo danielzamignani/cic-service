@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryColumn } from "typeorm";
+import { ItemEntity } from "./item.entity";
 
 @Entity('users')
 export class UserEntity {
@@ -25,4 +26,7 @@ export class UserEntity {
         length: 30
     })
     password: string;
+
+    @ManyToMany(() => ItemEntity, item => item.users)
+    items: ItemEntity[];
 }
