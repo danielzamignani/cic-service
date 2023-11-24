@@ -12,12 +12,12 @@ export class CreateItemsUsers1700706833685 implements MigrationInterface {
         name: 'items_users',
         columns: [
           {
-            name: 'itemsId',
+            name: 'itemId',
             type: 'smallint',
             isPrimary: true,
           },
           {
-            name: 'usersId',
+            name: 'userId',
             type: 'uuid',
             isPrimary: true,
           },
@@ -28,13 +28,13 @@ export class CreateItemsUsers1700706833685 implements MigrationInterface {
     await queryRunner.createForeignKeys('items_users', [
       new TableForeignKey({
         name: 'FKItemUser',
-        columnNames: ['itemsId'],
+        columnNames: ['itemId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'items',
       }),
       new TableForeignKey({
         name: 'FKUserItem',
-        columnNames: ['usersId'],
+        columnNames: ['userId'],
         referencedColumnNames: ['id'],
         referencedTableName: 'users',
       }),
