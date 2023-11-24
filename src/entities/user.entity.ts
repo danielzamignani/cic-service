@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
 import { ItemEntity } from './item.entity';
+import { ItemRatingEntity } from './item-rating.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -17,6 +18,7 @@ export class UserEntity {
     name: 'email',
     type: 'varchar',
     length: 30,
+    unique: true
   })
   email: string;
 
@@ -29,4 +31,7 @@ export class UserEntity {
 
   @ManyToMany(() => ItemEntity, (item) => item.users)
   items: ItemEntity[];
+
+  @OneToMany(() => ItemRatingEntity, (itemRating) => itemRating.user)
+  ratings: ItemRatingEntity[];
 }

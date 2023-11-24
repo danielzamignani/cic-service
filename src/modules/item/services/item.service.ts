@@ -22,12 +22,12 @@ export class ItemService {
         'i.name AS name',
         'i.price AS price',
         'i.imageUrl AS imageUrl',
-        `CASE WHEN iu."usersId" IS NOT NULL THEN TRUE ELSE FALSE END AS favorite`,
+        `CASE WHEN iu."userId" IS NOT NULL THEN TRUE ELSE FALSE END AS favorite`,
       ])
       .leftJoin(
         'items_users',
         'iu',
-        `iu."itemsId" = i."id" AND iu."usersId" = :userId`,
+        `iu."itemId" = i."id" AND iu."userId" = :userId`,
         {
           userId: currentUser?.userId || null,
         },
