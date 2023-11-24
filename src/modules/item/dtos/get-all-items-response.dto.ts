@@ -30,4 +30,10 @@ export class GetAllItemsRespondeDTO {
     example: true,
   })
   favorite: boolean;
+
+  @ApiProperty({
+    name: 'rating',
+    example: 5,
+  })
+  rating: number;
 }

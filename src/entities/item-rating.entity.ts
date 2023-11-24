@@ -10,7 +10,7 @@ export class ItemRatingEntity {
     precision: 2,
     scale: 1,
   })
-  stars: string;
+  stars: number;
 
   @PrimaryColumn()
   userId: number;
