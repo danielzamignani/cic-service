@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ItemService } from '../services/item.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
@@ -9,6 +9,19 @@ import { GetItemResponseDTO } from '../dtos/get-item-response.dto';
 @Controller('items')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
+
+  @ApiResponse({
+    status: 200,
+    type: GetItemResponseDTO,
+    description: 'Return item by id',
+  })
+  @Get('/:itemId')
+  async getItemById(
+    @Param('itemId') itemId: number,
+    @CurrentUser() currentUser: ICurrentUser,
+  ): Promise<GetItemResponseDTO> {
+    return this.itemService.getItemById(itemId, currentUser);
+  }
 
   @ApiResponse({
     status: 200,

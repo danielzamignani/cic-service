@@ -9,6 +9,7 @@ import { vwItemEntityToDtoMapper } from '../mappers/vwItem-entity-to-dto.mapper'
 
 @Injectable()
 export class ItemService {
+ 
   @InjectRepository(VwItemEntity)
   private readonly vWItemsEntityRepository: Repository<VwItemEntity>;
 
@@ -16,6 +17,25 @@ export class ItemService {
   private readonly userEntityRepository: Repository<UserEntity>;
 
   constructor() {}
+  
+  async getItemById(itemId: number, currentUser: ICurrentUser): Promise<GetItemResponseDTO> {
+    const item: VwItemEntity = await this.vWItemsEntityRepository.findOne({
+      where: {id: itemId}
+    });
+
+    if (!item) throw new NotFoundException('Item not found!');
+
+    let favoriteUserItemsIds: number[] = [];
+    if (currentUser?.userId) {
+      favoriteUserItemsIds = await this.getFavoriteUserItems(
+        currentUser?.userId,
+      );
+    }
+
+    const getItemResponseDTO: GetItemResponseDTO = vwItemEntityToDtoMapper(item, favoriteUserItemsIds)
+
+    return getItemResponseDTO;
+  }
 
   async getAllItems(currentUser: ICurrentUser): Promise<GetItemResponseDTO[]> {
     const items: VwItemEntity[] = await this.vWItemsEntityRepository.find();
