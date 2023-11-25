@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetAllItemsRespondeDTO {
+export class GetItemResponseDTO {
   @ApiProperty({
     name: 'id',
     example: 1,
@@ -32,8 +32,8 @@ export class GetAllItemsRespondeDTO {
   favorite: boolean;
 
   @ApiProperty({
-    name: 'rating',
+    name: 'stars',
     example: 5,
   })
-  rating: number;
+  stars: number;
 }

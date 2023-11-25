@@ -18,7 +18,7 @@ export class UserEntity {
     name: 'email',
     type: 'varchar',
     length: 30,
-    unique: true
+    unique: true,
   })
   email: string;
 

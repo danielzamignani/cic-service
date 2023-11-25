@@ -1,63 +1,53 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ItemEntity } from 'src/entities/item.entity';
 import { Repository } from 'typeorm';
-import { GetAllItemsRespondeDTO } from '../dtos/get-all-items-response.dto';
 import { ICurrentUser } from 'src/shared/interfaces/current-user.interface';
-import { ItemRatingEntity } from 'src/entities/item-rating.entity';
 import { UserEntity } from 'src/entities/user.entity';
+import { VwItemEntity } from 'src/entities/vw-item.entity';
+import { GetItemResponseDTO } from '../dtos/get-item-response.dto';
+import { vwItemEntityToDtoMapper } from '../mappers/vwItem-entity-to-dto.mapper';
 
 @Injectable()
 export class ItemService {
-  @InjectRepository(ItemEntity)
-  private readonly itemEntityRepository: Repository<ItemEntity>;
+  @InjectRepository(VwItemEntity)
+  private readonly vWItemsEntityRepository: Repository<VwItemEntity>;
 
   @InjectRepository(UserEntity)
   private readonly userEntityRepository: Repository<UserEntity>;
 
   constructor() {}
 
-  async getAllItems(
-    currentUser: ICurrentUser,
-  ): Promise<GetAllItemsRespondeDTO[]> {
-    const items: GetAllItemsRespondeDTO[] = await this.itemEntityRepository
-      .createQueryBuilder('i')
-      .select([
-        'i.id AS id',
-        'i.name AS name',
-        'i.price AS price',
-        'i.imageUrl AS imageUrl',
-        'COALESCE(AVG(ir.stars), 0) AS rating'
-      ])
-      .leftJoin(
-        ItemRatingEntity, 
-        'ir', 
-        'ir.itemId = i.id'
-      )
-      .groupBy('i.id')
-      .orderBy('i.id', 'ASC')
-      .getRawMany();
+  async getAllItems(currentUser: ICurrentUser): Promise<GetItemResponseDTO[]> {
+    const items: VwItemEntity[] = await this.vWItemsEntityRepository.find();
 
+    if (!items) throw new NotFoundException('Items not found!');
 
-    if(currentUser?.userId) {
-      const userFavoriteItems = await this.userEntityRepository
-      .createQueryBuilder('u')
-      .select(['iu.itemId AS "itemId"'])
-      .innerJoin('items_users','iu',`iu."userId" =  u.id`)
-      .where('u.id = :userId', {userId: currentUser?.userId})
-      .getRawMany();
-
-      const favoriteItemsIds: number[] = userFavoriteItems.map(userFavoriteItem => userFavoriteItem.itemId); 
-
-      items.forEach(item => {
-        if(favoriteItemsIds.includes(item.id) ) {
-          item.favorite = true;
-        } else {
-          item.favorite = false;
-        }
-      });
+    let favoriteUserItemsIds: number[] = [];
+    if (currentUser?.userId) {
+      favoriteUserItemsIds = await this.getFavoriteUserItems(
+        currentUser?.userId,
+      );
     }
 
-    return items;
+    const getItemResponseDTO: GetItemResponseDTO[] = items.map((item) =>
+      vwItemEntityToDtoMapper(item, favoriteUserItemsIds),
+    );
+
+    return getItemResponseDTO;
+  }
+
+  async getFavoriteUserItems(userId: string): Promise<number[]> {
+    const userFavoriteItems = await this.userEntityRepository
+      .createQueryBuilder('u')
+      .select(['iu.itemId AS "itemId"'])
+      .innerJoin('items_users', 'iu', `iu."userId" =  u.id`)
+      .where('u.id = :userId', { userId })
+      .getRawMany();
+
+    const favoriteUserItemsIds: number[] = userFavoriteItems.map(
+      (userFavoriteItem) => userFavoriteItem.itemId,
+    );
+
+    return favoriteUserItemsIds;
   }
 }
