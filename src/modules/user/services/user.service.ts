@@ -23,8 +23,15 @@ export class UserService {
       where: { email: LoginUserRequestDTO.email },
     });
 
-    if (!user || user.password !== LoginUserRequestDTO.password)
+    if (!user) {
       throw new UnauthorizedException('Incorrect email or password!');
+    }
+
+    const correctPassword = await bcrypt.compare(LoginUserRequestDTO.password, user?.password);
+
+    if (!correctPassword) {
+      throw new UnauthorizedException('Incorrect email or password!');
+    }
 
     const payload = { sub: user.id, email: user.email };
 
