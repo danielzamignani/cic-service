@@ -1,3 +1,6 @@
 export interface ICurrentUser {
-  userId: string;
+  sub: string;
+  email: string;
+  iat: number;
+  exp: number
 }

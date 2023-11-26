@@ -7,6 +7,7 @@ import { VwItemEntity } from 'src/entities/vw-item.entity';
 import { GetItemResponseDTO } from '../dtos/get-item-response.dto';
 import { vwItemEntityToDtoMapper } from '../mappers/vwItem-entity-to-dto.mapper';
 import { GetItemByQueryRequestDTO } from '../dtos/get-item-by-query-request.dto';
+import { UserService } from 'src/modules/user/services/user.service';
 /**
  * Instalar redis
  */
@@ -18,7 +19,9 @@ export class ItemService {
   @InjectRepository(UserEntity)
   private readonly userEntityRepository: Repository<UserEntity>;
 
-  constructor() {}
+  constructor(
+    private userService: UserService
+  ) {}
 
   async getItemById(
     itemId: number,
@@ -31,9 +34,9 @@ export class ItemService {
     if (!item) throw new NotFoundException('Item not found!');
 
     let favoriteUserItemsIds: number[] = [];
-    if (currentUser?.userId) {
-      favoriteUserItemsIds = await this.getFavoriteUserItems(
-        currentUser?.userId,
+    if (currentUser?.sub) {
+      favoriteUserItemsIds = await this.userService.getFavoriteUserItems(
+        currentUser?.sub,
       );
     }
 
@@ -60,9 +63,9 @@ export class ItemService {
     if (!items) throw new NotFoundException('Item not found!');
 
     let favoriteUserItemsIds: number[] = [];
-    if (currentUser?.userId) {
-      favoriteUserItemsIds = await this.getFavoriteUserItems(
-        currentUser?.userId,
+    if (currentUser?.sub) {
+      favoriteUserItemsIds = await this.userService.getFavoriteUserItems(
+        currentUser?.sub,
       );
     }
 
@@ -79,9 +82,9 @@ export class ItemService {
     if (!items) throw new NotFoundException('Items not found!');
 
     let favoriteUserItemsIds: number[] = [];
-    if (currentUser?.userId) {
-      favoriteUserItemsIds = await this.getFavoriteUserItems(
-        currentUser?.userId,
+    if (currentUser?.sub) {
+      favoriteUserItemsIds = await this.userService.getFavoriteUserItems(
+        currentUser?.sub,
       );
     }
 
@@ -90,20 +93,5 @@ export class ItemService {
     );
 
     return getItemResponseDTO;
-  }
-
-  async getFavoriteUserItems(userId: string): Promise<number[]> {
-    const userFavoriteItems = await this.userEntityRepository
-      .createQueryBuilder('u')
-      .select(['iu.itemId AS "itemId"'])
-      .innerJoin('items_users', 'iu', `iu."userId" =  u.id`)
-      .where('u.id = :userId', { userId })
-      .getRawMany();
-
-    const favoriteUserItemsIds: number[] = userFavoriteItems.map(
-      (userFavoriteItem) => userFavoriteItem.itemId,
-    );
-
-    return favoriteUserItemsIds;
   }
 }

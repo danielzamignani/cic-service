@@ -33,7 +33,7 @@ export class UserService {
       throw new UnauthorizedException('Incorrect email or password!');
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id };
 
     const jwt = await this.jwtService.signAsync(payload, {
       expiresIn: '8h',
@@ -75,5 +75,20 @@ export class UserService {
       },
       message: 'User created!'
     };
+  }
+  
+  async getFavoriteUserItems(userId: string): Promise<number[]> {
+    const userFavoriteItems = await this.userEntityRepository
+      .createQueryBuilder('u')
+      .select(['iu.itemId AS "itemId"'])
+      .innerJoin('items_users', 'iu', `iu."userId" =  u.id`)
+      .where('u.id = :userId', { userId })
+      .getRawMany();
+
+    const favoriteUserItemsIds: number[] = userFavoriteItems.map(
+      (userFavoriteItem) => userFavoriteItem.itemId,
+    );
+
+    return favoriteUserItemsIds;
   }
 }
