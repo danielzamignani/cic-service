@@ -6,7 +6,7 @@ import { UserEntity } from 'src/entities/user.entity';
 import { VwItemEntity } from 'src/entities/vw-item.entity';
 import { GetItemResponseDTO } from '../dtos/get-item-response.dto';
 import { vwItemEntityToDtoMapper } from '../mappers/vwItem-entity-to-dto.mapper';
-import { GetItemByQueryRequestDTO } from '../dtos/get-item-by-query.request.dto';
+import { GetItemByQueryRequestDTO } from '../dtos/get-item-by-query-request.dto';
 /**
  * Instalar redis
  */
@@ -19,10 +19,13 @@ export class ItemService {
   private readonly userEntityRepository: Repository<UserEntity>;
 
   constructor() {}
-  
-  async getItemById(itemId: number, currentUser: ICurrentUser): Promise<GetItemResponseDTO> {
+
+  async getItemById(
+    itemId: number,
+    currentUser: ICurrentUser,
+  ): Promise<GetItemResponseDTO> {
     const item: VwItemEntity = await this.vWItemsEntityRepository.findOne({
-      where: {id: itemId}
+      where: { id: itemId },
     });
 
     if (!item) throw new NotFoundException('Item not found!');
@@ -34,16 +37,25 @@ export class ItemService {
       );
     }
 
-    const getItemResponseDTO: GetItemResponseDTO = vwItemEntityToDtoMapper(item, favoriteUserItemsIds)
+    const getItemResponseDTO: GetItemResponseDTO = vwItemEntityToDtoMapper(
+      item,
+      favoriteUserItemsIds,
+    );
 
     return getItemResponseDTO;
   }
 
-  async getItemByQuery(getItemByQueryRequestDTO: GetItemByQueryRequestDTO, currentUser: ICurrentUser): Promise<GetItemResponseDTO[]> {
-    //REMOVER O LIKE 
-    const items: VwItemEntity[] = await this.vWItemsEntityRepository.createQueryBuilder('i')
-      .where(`LOWER(unaccent(i.name)) LIKE LOWER(unaccent('%${getItemByQueryRequestDTO.name}%'))`)
-      .getMany()
+  async getItemByQuery(
+    getItemByQueryRequestDTO: GetItemByQueryRequestDTO,
+    currentUser: ICurrentUser,
+  ): Promise<GetItemResponseDTO[]> {
+    //REMOVER O LIKE
+    const items: VwItemEntity[] = await this.vWItemsEntityRepository
+      .createQueryBuilder('i')
+      .where(
+        `LOWER(unaccent(i.name)) LIKE LOWER(unaccent('%${getItemByQueryRequestDTO.name}%'))`,
+      )
+      .getMany();
 
     if (!items) throw new NotFoundException('Item not found!');
 
@@ -55,9 +67,8 @@ export class ItemService {
     }
 
     const getItemResponseDTO: GetItemResponseDTO[] = items.map((item) =>
-    vwItemEntityToDtoMapper(item, favoriteUserItemsIds),
-  );
-
+      vwItemEntityToDtoMapper(item, favoriteUserItemsIds),
+    );
 
     return getItemResponseDTO;
   }

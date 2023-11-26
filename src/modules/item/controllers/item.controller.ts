@@ -4,7 +4,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { ICurrentUser } from 'src/shared/interfaces/current-user.interface';
 import { GetItemResponseDTO } from '../dtos/get-item-response.dto';
-import { GetItemByQueryRequestDTO } from '../dtos/get-item-by-query.request.dto';
+import { GetItemByQueryRequestDTO } from '../dtos/get-item-by-query-request.dto';
 
 @ApiTags('items')
 @Controller('items')
@@ -21,7 +21,10 @@ export class ItemController {
     @Query() getItemByQueryRequestDTO: GetItemByQueryRequestDTO,
     @CurrentUser() currentUser: ICurrentUser,
   ): Promise<GetItemResponseDTO[]> {
-    return this.itemService.getItemByQuery(getItemByQueryRequestDTO, currentUser);
+    return this.itemService.getItemByQuery(
+      getItemByQueryRequestDTO,
+      currentUser,
+    );
   }
 
   @ApiResponse({
