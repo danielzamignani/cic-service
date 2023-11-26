@@ -1,8 +1,10 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
-import { ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Body, Controller, Post, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 import { UserService } from '../services/user.service';
 import { LoginUserRequestDTO } from '../dtos/login-user-request.dto';
 import { LoginUserResponseDTO } from '../dtos/login-user-response.dto';
+import { SignUpUserRequestDTO } from '../dtos/sign-up-user-request.dto';
+import { SignUpResponseDTO } from '../dtos/sing-up-user-response.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -20,5 +22,18 @@ export class UserController {
   @Post('/login')
   async loginUser(@Body() LoginUserRequestDTO: LoginUserRequestDTO) {
     return await this.userService.loginUser(LoginUserRequestDTO);
+  }
+
+  @ApiResponse({
+    status: 200,
+    type: SignUpResponseDTO,
+    description: 'Returns JWT',
+  })
+  @ApiUnprocessableEntityResponse({
+    type: UnprocessableEntityException,
+  })
+  @Post('/signup')
+  async signUpUser(@Body() signUpUserRequestDTO: SignUpUserRequestDTO): Promise<SignUpResponseDTO> {
+    return await this.userService.signUpUser(signUpUserRequestDTO);
   }
 }
