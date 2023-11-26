@@ -12,7 +12,7 @@ export const dataSourceOptions: DataSourceOptions = {
   migrations: ['dist/shared/infra/typeorm/migrations/*.js'],
   migrationsTableName: 'migrations',
   synchronize: false,
-  logging: true,
+  logging: false,
 };
 
 const dataSource = new DataSource(dataSourceOptions);
