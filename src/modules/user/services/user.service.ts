@@ -41,7 +41,11 @@ export class UserService {
     });
 
     return {
-      accessToken: jwt,
+      token: jwt,
+      email: user.email,
+      name: user.name,
+      id: user.id,
+      isAdmin: false
     };
   }
 
