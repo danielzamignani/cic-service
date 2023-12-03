@@ -67,7 +67,7 @@ export class UserService {
     const user = new UserEntity();
     user.id = randomUUID();
     user.name = signUpUserRequestDTO.name;
-    user.email = signUpUserRequestDTO.password;
+    user.email = signUpUserRequestDTO.email;
     user.password = cryptPassword;
 
     await this.userEntityRepository.insert(user);

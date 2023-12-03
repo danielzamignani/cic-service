@@ -6,8 +6,8 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ~/apps/postgres:/var/lib/postgresql/data
+      - ~/apps/postgres:/var/lib/postgresql/db-data
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
-      - POSTGRES_DB=cdc
+      - POSTGRES_DB=cic 
