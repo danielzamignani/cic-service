@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/entities/user.entity';
@@ -6,9 +10,9 @@ import { LoginUserRequestDTO } from '../dtos/login-user-request.dto';
 import { LoginUserResponseDTO } from '../dtos/login-user-response.dto';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpUserRequestDTO } from '../dtos/sign-up-user-request.dto';
-import {randomUUID} from 'crypto';
+import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { SignUpResponseDTO } from '../dtos/sing-up-user-response.dto';
+
 @Injectable()
 export class UserService {
   @InjectRepository(UserEntity)
@@ -27,12 +31,53 @@ export class UserService {
       throw new UnauthorizedException('Incorrect email or password!');
     }
 
-    const correctPassword = await bcrypt.compare(LoginUserRequestDTO.password, user?.password);
+    const correctPassword = await bcrypt.compare(
+      LoginUserRequestDTO.password,
+      user?.password,
+    );
 
     if (!correctPassword) {
       throw new UnauthorizedException('Incorrect email or password!');
     }
 
+    const res = await this.gerenareteTokenResponse(user);
+
+    return res;
+  }
+
+  async signUpUser(
+    signUpUserRequestDTO: SignUpUserRequestDTO,
+  ): Promise<LoginUserResponseDTO> {
+    const userExists = await this.userEntityRepository.count({
+      where: {
+        email: signUpUserRequestDTO.email,
+      },
+    });
+
+    if (userExists) {
+      throw new UnprocessableEntityException('User alread exists!');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const cryptPassword = await bcrypt.hash(
+      signUpUserRequestDTO.password,
+      salt,
+    );
+
+    const user = new UserEntity();
+    user.id = randomUUID();
+    user.name = signUpUserRequestDTO.name;
+    user.email = signUpUserRequestDTO.password;
+    user.password = cryptPassword;
+
+    await this.userEntityRepository.insert(user);
+
+    const res = await this.gerenareteTokenResponse(user);
+
+    return res;
+  }
+
+  async gerenareteTokenResponse(user: UserEntity) {
     const payload = { sub: user.id };
 
     const jwt = await this.jwtService.signAsync(payload, {
@@ -45,42 +90,10 @@ export class UserService {
       email: user.email,
       name: user.name,
       id: user.id,
-      isAdmin: false
+      isAdmin: false,
     };
   }
 
-  async signUpUser(signUpUserRequestDTO: SignUpUserRequestDTO): Promise<SignUpResponseDTO> {
-    const userExists = await this.userEntityRepository.count({
-      where: {
-        email: signUpUserRequestDTO.email
-      }
-    });
-
-    if(userExists) {
-      throw new UnprocessableEntityException('User alread exists!');
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const cryptPassword = await bcrypt.hash(signUpUserRequestDTO.password, salt);
-
-    const userId = randomUUID();
-    await this.userEntityRepository.insert({
-      id: userId,
-      name: signUpUserRequestDTO.name,
-      password: cryptPassword,
-      email: signUpUserRequestDTO.email
-    });
-
-    return {
-      user: {
-        id: userId,
-        name: signUpUserRequestDTO.name,
-        email: signUpUserRequestDTO.email
-      },
-      message: 'User created!'
-    };
-  }
-  
   async getFavoriteUserItems(userId: string): Promise<number[]> {
     const userFavoriteItems = await this.userEntityRepository
       .createQueryBuilder('u')

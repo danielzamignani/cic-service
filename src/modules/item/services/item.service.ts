@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ICurrentUser } from 'src/shared/interfaces/current-user.interface';
-import { UserEntity } from 'src/entities/user.entity';
 import { VwItemEntity } from 'src/entities/vw-item.entity';
 import { GetItemResponseDTO } from '../dtos/get-item-response.dto';
 import { vwItemEntityToDtoMapper } from '../mappers/vwItem-entity-to-dto.mapper';
@@ -16,12 +15,7 @@ export class ItemService {
   @InjectRepository(VwItemEntity)
   private readonly vWItemsEntityRepository: Repository<VwItemEntity>;
 
-  @InjectRepository(UserEntity)
-  private readonly userEntityRepository: Repository<UserEntity>;
-
-  constructor(
-    private userService: UserService
-  ) {}
+  constructor(private userService: UserService) {}
 
   async getItemById(
     itemId: number,

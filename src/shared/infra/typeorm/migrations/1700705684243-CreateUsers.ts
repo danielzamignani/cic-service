@@ -27,6 +27,12 @@ export class CreateUsers1700705684243 implements MigrationInterface {
             type: 'varchar',
             length: '60',
           },
+          {
+            name: 'isAdmin',
+            type:'boolean',
+            default: false,
+            isNullable: false
+          }
         ],
       }),
     );

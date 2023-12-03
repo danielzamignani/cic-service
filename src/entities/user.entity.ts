@@ -29,6 +29,13 @@ export class UserEntity {
   })
   password: string;
 
+  @Column({
+    name: 'isAdmin',
+    type: 'boolean',
+    default: false
+  })
+  isAdmin: boolean;
+
   @ManyToMany(() => ItemEntity, (item) => item.users)
   items: ItemEntity[];
 
