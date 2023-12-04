@@ -6,7 +6,12 @@ import { UserModule } from './modules/user/user.module';
 import { AddressModule } from './modules/address/address.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dataSourceOptions), ItemModule, UserModule, AddressModule],
+  imports: [
+    TypeOrmModule.forRoot(dataSourceOptions),
+    ItemModule,
+    UserModule,
+    AddressModule,
+  ],
   controllers: [],
   providers: [],
 })

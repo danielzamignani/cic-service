@@ -1,10 +1,22 @@
-import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { ItemEntity } from './item.entity';
 import { ItemRatingEntity } from './item-rating.entity';
+import { AddressEntity } from './address.entity';
+import { Address } from 'cluster';
 
 @Entity('users')
 export class UserEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({
+    name: 'id',
+    type: 'uuid',
+  })
   id: string;
 
   @Column({
@@ -32,7 +44,7 @@ export class UserEntity {
   @Column({
     name: 'isAdmin',
     type: 'boolean',
-    default: false
+    default: false,
   })
   isAdmin: boolean;
 
@@ -41,4 +53,7 @@ export class UserEntity {
 
   @OneToMany(() => ItemRatingEntity, (itemRating) => itemRating.user)
   ratings: ItemRatingEntity[];
+
+  @OneToOne(() => AddressEntity, (address) => address.user)
+  address?: Address;
 }

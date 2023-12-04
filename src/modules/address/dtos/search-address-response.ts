@@ -15,7 +15,7 @@ export class SearchAddressResponseDTO {
 
   @ApiProperty({
     name: 'zipCode',
-    example: '09195070'
+    example: '09195070',
   })
   zipCode: string;
 }

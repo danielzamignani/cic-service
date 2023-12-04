@@ -29,10 +29,10 @@ export class CreateUsers1700705684243 implements MigrationInterface {
           },
           {
             name: 'isAdmin',
-            type:'boolean',
+            type: 'boolean',
             default: false,
-            isNullable: false
-          }
+            isNullable: false,
+          },
         ],
       }),
     );

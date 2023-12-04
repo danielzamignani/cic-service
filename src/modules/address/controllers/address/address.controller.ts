@@ -6,20 +6,17 @@ import { SearchAddressResponseDTO } from '../../dtos/search-address-response';
 @ApiTags('address')
 @Controller('address')
 export class AddressController {
-    constructor(
-        private addressService: AddressService
-    ) {}
+  constructor(private addressService: AddressService) {}
 
-    @ApiResponse({
-        status: 200,
-         type: SearchAddressResponseDTO,
-        description: 'Return address by zip code',
-    })
-    @Get('/:zipCode')
-      async searchAddressZipCode(
-        @Param('zipCode') zipCode: string,
-      ): Promise<SearchAddressResponseDTO> {
-        return this.addressService.searchAddressZipCode(zipCode);
-      }
-    
+  @ApiResponse({
+    status: 200,
+    type: SearchAddressResponseDTO,
+    description: 'Return address by zip code',
+  })
+  @Get('/:zipCode')
+  async searchAddressZipCode(
+    @Param('zipCode') zipCode: string,
+  ): Promise<SearchAddressResponseDTO> {
+    return this.addressService.searchAddressZipCode(zipCode);
+  }
 }
