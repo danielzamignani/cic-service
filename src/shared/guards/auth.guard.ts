@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class UserGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   canActivate(
@@ -26,7 +26,7 @@ export class UserGuard implements CanActivate {
         secret: 'ultraSecretSecret',
       });
 
-      return true;
+      return !!decoded;
     } catch (err) {
       throw new UnauthorizedException('Invalid token!');
     }

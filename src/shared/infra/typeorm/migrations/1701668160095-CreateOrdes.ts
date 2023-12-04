@@ -30,6 +30,7 @@ export class CreateOrdes1701668160095 implements MigrationInterface {
           {
             name: 'paymentId',
             type: 'uuid',
+            isNullable: true,
           },
           {
             name: 'status',

@@ -38,8 +38,9 @@ export class OrderEntity {
   @Column({
     name: 'paymentId',
     type: 'uuid',
+    nullable: true,
   })
-  paymentId: string;
+  paymentId?: string;
 
   @Column({
     name: 'status',
@@ -52,13 +53,13 @@ export class OrderEntity {
     name: 'createdAt',
     type: 'timestamp',
   })
-  createdAt: number;
+  createdAt: string;
 
   @Column({
     name: 'updatedAt',
     type: 'timestamp',
   })
-  updatedAt: number;
+  updatedAt: string;
 
   @Column({
     name: 'addressId',

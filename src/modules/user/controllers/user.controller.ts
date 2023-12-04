@@ -30,8 +30,8 @@ export class UserController {
     type: UnauthorizedException,
   })
   @Post('/login')
-  async loginUser(@Body() LoginUserRequestDTO: LoginUserRequestDTO) {
-    return await this.userService.loginUser(LoginUserRequestDTO);
+  async loginUser(@Body() loginUserRequestDTO: LoginUserRequestDTO) {
+    return await this.userService.loginUser(loginUserRequestDTO);
   }
 
   @ApiResponse({
