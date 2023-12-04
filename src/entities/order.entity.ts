@@ -2,6 +2,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryColumn,
@@ -9,6 +11,7 @@ import {
 import { UserEntity } from './user.entity';
 import { AddressEntity } from './address.entity';
 import { OrderStatusEnum } from 'src/shared/constants/order_status';
+import { ItemEntity } from './item.entity';
 
 @Entity('orders')
 export class OrderEntity {
@@ -76,4 +79,12 @@ export class OrderEntity {
   @ManyToOne(() => UserEntity, (user) => user.orders)
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
+
+  @ManyToMany(() => ItemEntity, (item) => item.orders)
+  @JoinTable({
+    name: 'items_orders',
+    joinColumn: { name: 'orderId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'itemId', referencedColumnName: 'id' },
+  })
+  items: ItemEntity[];
 }

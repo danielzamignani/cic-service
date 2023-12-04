@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { ItemRatingEntity } from './item-rating.entity';
+import { OrderEntity } from './order.entity';
 
 @Entity('items')
 export class ItemEntity {
@@ -48,4 +49,7 @@ export class ItemEntity {
 
   @OneToMany(() => ItemRatingEntity, (itemRating) => itemRating.item)
   ratings: ItemRatingEntity[];
+
+  @ManyToMany(() => OrderEntity, (order) => order.items)
+  orders: OrderEntity[];
 }
