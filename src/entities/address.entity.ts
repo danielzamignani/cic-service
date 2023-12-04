@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryColumn,
-} from 'typeorm';
-import { UserEntity } from './user.entity';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('address')
 export class AddressEntity {
@@ -54,14 +47,4 @@ export class AddressEntity {
     nullable: true,
   })
   complement?: string;
-
-  @Column({
-    name: 'userId',
-    type: 'uuid',
-  })
-  userId: string;
-
-  @OneToOne(() => UserEntity)
-  @JoinColumn({ name: 'userId' })
-  user: UserEntity;
 }

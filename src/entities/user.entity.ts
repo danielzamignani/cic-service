@@ -1,15 +1,7 @@
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
 import { ItemEntity } from './item.entity';
 import { ItemRatingEntity } from './item-rating.entity';
-import { AddressEntity } from './address.entity';
-import { Address } from 'cluster';
+import { OrderEntity } from './order.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -54,6 +46,6 @@ export class UserEntity {
   @OneToMany(() => ItemRatingEntity, (itemRating) => itemRating.user)
   ratings: ItemRatingEntity[];
 
-  @OneToOne(() => AddressEntity, (address) => address.user)
-  address?: Address;
+  @OneToMany(() => OrderEntity, (order) => order.user)
+  orders: OrderEntity[];
 }
