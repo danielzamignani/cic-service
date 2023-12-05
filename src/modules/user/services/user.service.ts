@@ -82,7 +82,7 @@ export class UserService {
 
     const jwt = await this.jwtService.signAsync(payload, {
       expiresIn: '8h',
-      secret: 'ultraSecretSecret',
+      secret: process.env.JWT_SECRET,
     });
 
     return {
