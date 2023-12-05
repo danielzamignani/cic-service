@@ -9,6 +9,7 @@ import { OrderEntity } from 'src/entities/order.entity';
 import { ItemEntity } from 'src/entities/item.entity';
 import { ItemOrderEntity } from 'src/entities/item-order.entity';
 import { AddressModule } from '../address/address.module';
+import { PaymentEntity } from 'src/entities/payment.entity';
 
 @Module({
   controllers: [OrderController],
@@ -20,6 +21,7 @@ import { AddressModule } from '../address/address.module';
       OrderEntity,
       ItemEntity,
       ItemOrderEntity,
+      PaymentEntity,
     ]),
     JwtModule,
     AddressModule,

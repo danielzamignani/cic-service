@@ -5,13 +5,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { AddressEntity } from './address.entity';
 import { OrderStatusEnum } from 'src/shared/constants/order_status';
-import { ItemEntity } from './item.entity';
+import { ItemOrderEntity } from './item-order.entity';
 
 @Entity('orders')
 export class OrderEntity {
@@ -34,13 +35,6 @@ export class OrderEntity {
     type: 'varchar',
   })
   orderName: string;
-
-  @Column({
-    name: 'paymentId',
-    type: 'uuid',
-    nullable: true,
-  })
-  paymentId?: string;
 
   @Column({
     name: 'status',
@@ -81,11 +75,6 @@ export class OrderEntity {
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
-  @ManyToMany(() => ItemEntity, (item) => item.orders)
-  @JoinTable({
-    name: 'items_orders',
-    joinColumn: { name: 'orderId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'itemId', referencedColumnName: 'id' },
-  })
-  items: ItemEntity[];
+  @OneToMany(() => ItemOrderEntity, (itemOrder) => itemOrder.order)
+  itemsOrders: ItemOrderEntity[];
 }

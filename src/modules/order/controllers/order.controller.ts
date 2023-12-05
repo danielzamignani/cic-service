@@ -7,6 +7,7 @@ import { CurrentUser } from 'src/shared/decorators/current-user.decorator';
 import { ICurrentUser } from 'src/shared/interfaces/current-user.interface';
 import { OrderEntity } from 'src/entities/order.entity';
 import { CreateOrderResponseDTO } from '../dtos/create-order-response.dto';
+import { FinishPaymentRequestDTO } from '../dtos/finish-payment-request.dto';
 
 @ApiTags('order')
 @Controller('order')
@@ -39,8 +40,26 @@ export class OrderController {
   @Get('/:orderId')
   async getOrderById(
     @CurrentUser() currentUser: ICurrentUser,
-    @Param('orderId') orderId: string
+    @Param('orderId') orderId: string,
   ): Promise<OrderEntity> {
     return await this.orderService.getOrderById(orderId, currentUser);
+  }
+
+  @ApiResponse({
+    status: 201,
+    type: OrderEntity,
+    description: 'Finish payment order',
+  })
+  @Post('/:orderId/finish')
+  async finishPaymentOrder(
+    @Param('orderId') orderId: string,
+    @Body() finishPaymentRequestDTO: FinishPaymentRequestDTO,
+    @CurrentUser() currentUser: ICurrentUser,
+  ): Promise<OrderEntity> {
+    return await this.orderService.finishPayment(
+      orderId,
+      finishPaymentRequestDTO,
+      currentUser,
+    );
   }
 }

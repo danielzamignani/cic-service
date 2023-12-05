@@ -9,6 +9,7 @@ import {
 import { UserEntity } from './user.entity';
 import { ItemRatingEntity } from './item-rating.entity';
 import { OrderEntity } from './order.entity';
+import { ItemOrderEntity } from './item-order.entity';
 
 @Entity('items')
 export class ItemEntity {
@@ -50,6 +51,6 @@ export class ItemEntity {
   @OneToMany(() => ItemRatingEntity, (itemRating) => itemRating.item)
   ratings: ItemRatingEntity[];
 
-  @ManyToMany(() => OrderEntity, (order) => order.items)
-  orders: OrderEntity[];
+  @OneToMany(() => ItemOrderEntity, (itemOrder) => itemOrder.item)
+  itemsOrders: ItemOrderEntity[];
 }

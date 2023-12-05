@@ -28,11 +28,6 @@ export class CreateOrdes1701668160095 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'paymentId',
-            type: 'uuid',
-            isNullable: true,
-          },
-          {
             name: 'status',
             type: 'enum',
             enum: [

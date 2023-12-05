@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { CreateOrderRequestDTO } from '../dtos/create-order-request.dto';
 import { OrderEntity } from 'src/entities/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,10 +16,11 @@ import { CartItemDTO } from '../dtos/cart-item.dto';
 import { ItemOrderEntity } from 'src/entities/item-order.entity';
 import { AddressService } from 'src/modules/address/services/address/address.service';
 import { CreateOrderResponseDTO } from '../dtos/create-order-response.dto';
+import { FinishPaymentRequestDTO } from '../dtos/finish-payment-request.dto';
+import { PaymentEntity } from 'src/entities/payment.entity';
 
 @Injectable()
 export class OrderService {
-
   @InjectRepository(UserEntity)
   private readonly userEntityRepository: Repository<UserEntity>;
 
@@ -23,6 +29,9 @@ export class OrderService {
 
   @InjectRepository(ItemOrderEntity)
   private readonly itemOrderEntityRepository: Repository<ItemOrderEntity>;
+
+  @InjectRepository(PaymentEntity)
+  private readonly paymentEntityRepository: Repository<PaymentEntity>;
 
   constructor(private addressService: AddressService) {}
 
@@ -80,22 +89,57 @@ export class OrderService {
     return;
   }
 
-  async getOrderById(orderId: string, currentUser: ICurrentUser): Promise<OrderEntity>{
+  async getOrderById(orderId: string, currentUser: ICurrentUser): Promise<any> {
     const order = await this.orderEntityRepository.findOne({
       where: {
-        id: orderId
+        id: orderId,
       },
-      relations: {
-        address: true,
-        user: true,
-        items: true
-      }
+      relations: ['address', 'user', 'itemsOrders', 'itemsOrders.item'],
     });
 
-    if(order.userId !== currentUser.sub) throw new UnauthorizedException(`This order is not of this user!`);
+    if (order.userId !== currentUser.sub)
+      throw new UnauthorizedException(`This order is not of this user!`);
 
-    if(order.status !== OrderStatusEnum.NEW) throw new UnprocessableEntityException(`Invalid status`)
+    const res = {
+      ...order,
+      items: order.itemsOrders,
+    };
 
-    return order;
+    return res;
+  }
+
+  async finishPayment(
+    orderId: string,
+    finishPaymentRequestDTO: FinishPaymentRequestDTO,
+    currentUser: ICurrentUser,
+  ): Promise<any> {
+    const order = await this.orderEntityRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!order) throw new NotFoundException(`Order not found!`);
+
+    if (order.userId !== currentUser.sub)
+      throw new UnauthorizedException(`This order is not of this user!`);
+
+    if(order.status !== OrderStatusEnum.NEW)
+      throw new UnprocessableEntityException(`This order payment already processed!`)
+
+    const payment = new PaymentEntity();
+    payment.id = randomUUID();
+    payment.cardHolderDocument = finishPaymentRequestDTO.cardHolderDocument;
+    payment.cardHolderName = finishPaymentRequestDTO.cardHolderName;
+    payment.cardNumber = finishPaymentRequestDTO.cardNumber;
+    payment.expirationDate = finishPaymentRequestDTO.expirationDate;
+    payment.paymentMethod = finishPaymentRequestDTO.paymentMethod;
+    payment.orderId = order.id;
+
+    await this.paymentEntityRepository.insert(payment);
+
+    order.updatedAt = new Date().toISOString();
+    order.status = OrderStatusEnum.PAYED;
+    await this.orderEntityRepository.save(order);
+
+    return;
   }
 }
